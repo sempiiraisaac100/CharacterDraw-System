@@ -52,7 +52,7 @@ int main(){
         query_len = strlen(query_);
 
         run_query = (char *) malloc(query_len);
-        snprintf(run_query, query_len, "SELECT `pupil_code` FROM `pupils` WHERE `pupil_code`= '%s'",pupil_code);
+        snprintf(run_query, query_len, "SELECT `id` FROM `pupils` WHERE `id`= '%s'",pupil_code);
 
 
            /* send SQL query */
@@ -109,6 +109,7 @@ int menu(char *code_[4]){
 		printf("=");
 
 	while(option != '1' && option != '0')
+
 	{
 		printf("\nPlease Enter any of the following commands to proceed.");
 		printf("\n1. Viewall");
@@ -158,11 +159,13 @@ int menu(char *code_[4]){
 		printf("\nEnter 1 to quit or 0 to attempt an assignment or any other character to continue: ");
 		getchar();
 		option = getchar();
+
+
 	}
 
 	if (option = '0'){
 
-       printf("\n\nEnter assignment_id (e.g. a003): \n\n");
+       printf("\n\nEnter assignment_id (e.g. 1): \n\n");
         //scanf("%i.%i.%i",&d,&m,&y);
        scanf("%s",a_id);
        fflush(stdout);
@@ -196,7 +199,7 @@ int Viewall(){
      printf("\ndatabase records...\n\n");
    }
 
-        if (mysql_query(conn, "SELECT * FROM assignments")) {
+        if (mysql_query(conn, "SELECT `id`,`characters`,`expiry_date`,`attempt_status`,`activation_status` FROM assignments")) {
                 printf("Unable to connect with MySQL server\n");
                 mysql_close(conn);
                 return 1;
@@ -219,7 +222,7 @@ int Viewall(){
 
                  printf("\n\n");
                  while (row = mysql_fetch_row(res)){
-                 printf("%s                %s              %s           %s            %s              %s\n", row[0], row[1], row[2], row[3], row[4], row[5]);
+                 printf("%s       %s              %s           %s            %s   \n", row[0], row[1], row[2], row[3], row[4], row[5]);
                  }
 
 
@@ -276,7 +279,7 @@ int RequestActivation(){
         //printf("%s\n", message_);
 
 
-        snprintf(buff, sizeof buff, "INSERT INTO requests (pupil_code, assignment_id, message) VALUES ('%s', '%s', '%s %s %s')",pupil_code,assignment_id,message_,message1_,message2_);
+        snprintf(buff, sizeof buff, "INSERT INTO requests (pupil_id, assignment_id, message) VALUES ('%s', '%s', '%s %s %s')",pupil_code,assignment_id,message_,message1_,message2_);
 
         //sprintf(buf, query_string,p_code,a_id,average_score,time_taken);
         if (mysql_query(conn,buff)) {
@@ -502,12 +505,12 @@ int Checkdates(){
     if(option=='0') exit(0);
     }while(option!='1');
 
-    query_ = "SELECT * FROM `assignments` WHERE expiry_date BETWEEN '&i-&i-&i' AND '&i-&i-&i'";
+    query_ = "SELECT `id`,`characters`,`expiry_date`,`attempt_status`,`activation_status` FROM `assignments` WHERE expiry_date BETWEEN '&i-&i-&i' AND '&i-&i-&i'";
 
         query_len = strlen(query_)+15;
 
         run_query = (char *) malloc(query_len);
-        snprintf(run_query, query_len, "SELECT * FROM `assignments` WHERE expiry_date BETWEEN '%i-%i-%i' AND '%i-%i-%i'",y,m,d,y1,m1,d1);
+        snprintf(run_query, query_len, "SELECT `id`,`characters`,`expiry_date`,`attempt_status`,`activation_status` FROM `assignments` WHERE expiry_date BETWEEN '%i-%i-%i' AND '%i-%i-%i'",y,m,d,y1,m1,d1);
 
         //snprintf(run_query, query_len, "SELECT * FROM `assignments` WHERE expiry_date BETWEEN '%i-%i-%i' AND '%i-%i-%i'",c,b,a,c,b,a1);
 
@@ -526,12 +529,12 @@ int Checkdates(){
                     }
 
                     while (col = mysql_fetch_field(res)) {
-                        printf("%s       ", col->name);
+                        printf("%s  ", col->name);
                     }
 
                      printf("\n\n");
                      while (row = mysql_fetch_row(res)){
-                     printf("%s                %s             %s        %s             %s                   %s\n", row[0], row[1], row[2], row[3], row[4], row[5]);
+                     printf("%s   %s             %s        %s             %s     \n", row[0], row[1], row[2], row[3], row[4], row[5]);
                      }
                  }
 
@@ -632,14 +635,14 @@ int Viewassignment(char *p[4]){
     printf("\nfetching from database records...\n\n");
 
    }
-    query_ = "SELECT `pupil_code`,`assignment_id`,`average_score`,`attempt_duration_in_seconds`,`teacher_comment` FROM `attempt` WHERE `pupil_code`='%s' AND `assignment_id`='%s'";
+    query_ = "SELECT `pupil_id`,`assignment_id`,`average_score`,`attempt_duration_in_seconds`,`teacher_comment` FROM `attempt` WHERE `pupil_id`='%s' AND `assignment_id`='%s'";
 
     //query_ = "SELECT `pupil_code`,`assignment_id`,`average_score`,`attempt_duration(seconds)`,`teacher_comment` FROM `attempt` WHERE `pupil_code`='%s'";
 
     query_len = strlen(query_)+9;
 
     run_query = (char *) malloc(query_len);
-    snprintf(run_query, query_len, "SELECT `pupil_code`,`assignment_id`,`average_score`,`attempt_duration_in_seconds`,`teacher_comment` FROM `attempt` WHERE `pupil_code`='%s' AND `assignment_id`='%s'",p,k);
+    snprintf(run_query, query_len, "SELECT `pupil_id`,`assignment_id`,`average_score`,`attempt_duration_in_seconds`,`teacher_comment` FROM `attempt` WHERE `pupil_id`='%s' AND `assignment_id`='%s'",p,k);
 
     //snprintf(run_query, query_len, "SELECT `pupil_code`,`assignment_id`,`average_score`,`attempt_duration(seconds)`,`teacher_comment` FROM `attempt` WHERE `pupil_code`='%s'",p);
 
@@ -672,7 +675,7 @@ int Viewassignment(char *p[4]){
 
                  printf("\n\n");
                  while (row = mysql_fetch_row(res)){
-                 printf("%s         %s          %s           %s                       %s\n", row[0], row[1], row[2], row[3], row[4]);
+                 printf("%s         %s                    %s           %s                       %s\n", row[0], row[1], row[2], row[3], row[4]);
                  }
 
 
@@ -726,7 +729,7 @@ int Attemptassignment(char *p_code[4],char *a_id[4]){
     query_len = strlen(query_)+5;
 
     run_query = (char *) malloc(query_len);
-    snprintf(run_query, query_len, "SELECT * FROM `assignments` WHERE `assignment_id`= '%s'",a_id);
+    snprintf(run_query, query_len, "SELECT * FROM `assignments` WHERE `id`= '%s'",a_id);
 
 
        /* send SQL query */
@@ -743,7 +746,7 @@ int Attemptassignment(char *p_code[4],char *a_id[4]){
                      expiry_date = row[2];
                      attempt_status =row[3];
                      activation_status = row[4];
-                     release_ = row[5];
+                     //release_ = row[5];
                      //mysql_free_result(res);
                      //mysql_close(conn);
 
@@ -751,7 +754,7 @@ int Attemptassignment(char *p_code[4],char *a_id[4]){
 
                      check_activation_status(a_id);
 
-                     check_release(a_id);
+                     //check_release(a_id);
 
                      printf("\nStart the Attempt...\n");
 
@@ -815,7 +818,7 @@ int checkexpiry(char *a_id[4]){
        query_len2 = strlen(query_2)+5;
 
        run_query2 = (char *) malloc(query_len2);
-       snprintf(run_query2, query_len2, "SELECT * FROM `assignments` WHERE `assignment_id`= '%s' AND `expiry_date`>=CURRENT_DATE",a_id);
+       snprintf(run_query2, query_len2, "SELECT * FROM `assignments` WHERE `id`= '%s' AND `expiry_date`>=CURRENT_DATE",a_id);
 
        if (mysql_query(conn,run_query2)) {
               fprintf(stderr, "%s\n", mysql_error(conn));
@@ -869,12 +872,12 @@ int check_activation_status(char *a_id[4]){
    }
 
 
-       query_2 = "SELECT * FROM `assignments` WHERE `assignment_id`= '%s' AND `activation_status`='activated'";
+       query_2 = "SELECT * FROM `assignments` WHERE `id`= '%s' AND `activation_status`='activated'";
 
        query_len2 = strlen(query_2)+5;
 
        run_query2 = (char *) malloc(query_len2);
-       snprintf(run_query2, query_len2, "SELECT * FROM `assignments` WHERE `assignment_id`= '%s' AND `activation_status`='activated'",a_id);
+       snprintf(run_query2, query_len2, "SELECT * FROM `assignments` WHERE `id`= '%s' AND `activation_status`='activated'",a_id);
 
        if (mysql_query(conn,run_query2)) {
               fprintf(stderr, "%s\n", mysql_error(conn));
@@ -933,7 +936,7 @@ int check_release(char *a_id[4]){
        query_len2 = strlen(query_2)+5;
 
        run_query2 = (char *) malloc(query_len2);
-       snprintf(run_query2, query_len2, "SELECT * FROM `assignments` WHERE `assignment_id`= '%s' AND `release_`='on'",a_id);
+       snprintf(run_query2, query_len2, "SELECT * FROM `assignments` WHERE `id`= '%s' AND `release_`='on'",a_id);
 
        if (mysql_query(conn,run_query2)) {
               fprintf(stderr, "%s\n", mysql_error(conn));
@@ -2037,12 +2040,12 @@ void update_attempt_status(char *a_id[4]){
     printf("\n\nUpdating attempt_status...\n\n");
 
    }
-    query_ = "UPDATE `assignments` SET `attempt_status` = 'attempted' WHERE assignment_id = '%s'";
+    query_ = "UPDATE `assignments` SET `attempt_status` = 'attempted' WHERE id = '%s'";
 
     query_len = strlen(query_)+5;
 
     run_query = (char *) malloc(query_len);
-    snprintf(run_query, query_len, "UPDATE `assignments` SET `attempt_status` = 'attempted' WHERE assignment_id = '%s'",a_id);
+    snprintf(run_query, query_len, "UPDATE `assignments` SET `attempt_status` = 'attempted' WHERE id = '%s'",a_id);
 
         if (mysql_query(conn,run_query )) {
                 printf("Unable to connect with MySQL server\n");
@@ -2101,7 +2104,7 @@ void reg_performance(char *p_code[4],char *a_id[4],double average_score,double t
            "INSERT INTO attempt(pupil_code, assignment_id, average_score, attempt_duration(seconds)) VALUES('%s','%s','%.2f','%.2f')"
                               };*/
 
-        snprintf(buff, sizeof buff, "INSERT INTO attempt(pupil_code, assignment_id, average_score, attempt_duration_in_seconds) VALUES('%s','%s',%.2f,%.2f);",p_code,a_id,average_score,time_taken);
+        snprintf(buff, sizeof buff, "INSERT INTO attempt(pupil_id, assignment_id, average_score, attempt_duration_in_seconds) VALUES('%s','%s',%.2f,%.2f);",p_code,a_id,average_score,time_taken);
 
         //sprintf(buf, query_string,p_code,a_id,average_score,time_taken);
         if (mysql_query(conn,buff))
